@@ -1,0 +1,32 @@
+{
+  "author": {
+    "name": "jackie22hi"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "@babel/generator": "^7.15.8",
+    "@babel/parser": "^7.15.8",
+    "@babel/traverse": "^7.15.4",
+    "@babel/types": "^7.15.6",
+    "fs-extra": "^10.0.0",
+    "htmlparser2": "^7.2.0"
+  },
+  "deprecated": false,
+  "description": "微信小程序摇树优化工具",
+  "devDependencies": {},
+  "keywords": [
+    "微信小程序",
+    "摇树优化"
+  ],
+  "license": "ISC",
+  "main": "src/index.js",
+  "name": "jackie-miniapp-shaking",
+  "repository": {
+    "type": "",
+    "url": ""
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.4"
+}
