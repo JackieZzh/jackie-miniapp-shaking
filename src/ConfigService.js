@@ -53,10 +53,10 @@ class ConfigService {
     }
 
     // new jackie新增分包加载机制
-    this.needDeleteSubPackages = options.needDeleteSubPackages || false;
+    this.needSubPackages = options.needSubPackages || false;
 
     // new jackie新增主包pages加载机制
-    this.needDeletePages = options.needDeletePages || false;
+    this.needPages = options.needPages || false;
   }
 }
 

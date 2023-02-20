@@ -6,6 +6,8 @@ const { MainDepend } = require('./MainDepend');
 const { SubDepend } = require('./SubDepend');
 const { ConfigService } = require('./ConfigService');
 const { asyncService } = require('./AsyncService');
+const { dirname } = require('path');
+const { exit } = require('process');
 
 class DependContainer {
 
@@ -49,9 +51,7 @@ class DependContainer {
     const subDepends = [];
     if (subPkgs && subPkgs.length) {
       subPkgs.forEach(item => {
-        if (this.config.needDeleteSubPackages && this.config.needDeleteSubPackages.includes(item.root)) {
-          console.log("已删除分包代码: ", item.root);
-        } else {
+        if (this.config.needSubPackages && this.config.needSubPackages.includes(item.root)) {
           const subPackageDepend = new SubDepend(this.config, item.root, this.mainDepend);
           item.pages.forEach(page => {
             subPackageDepend.addPage(page);
@@ -60,6 +60,7 @@ class DependContainer {
         }
       });
     }
+
     this.subDepends = subDepends;
   }
 
@@ -98,9 +99,9 @@ class DependContainer {
         }
       });
     });
-    console.log('mainNpm', Array.from(this.appendSet(mainNpm, interDependNpms)));
+    // console.log('mainNpm', Array.from(this.appendSet(mainNpm, interDependNpms)));
     subDepends.forEach(item => {
-      console.log(`${item.rootDir}_npm`, Array.from(item.isolatedNpms));
+      // console.log(`${item.rootDir}_npm`, Array.from(item.isolatedNpms));
     });
   }
 
@@ -144,16 +145,11 @@ class DependContainer {
 
   async copyAllFiles() {
     let allFiles = this.getAllStaticFiles();
-    console.log('正在拷贝文件....');
     const allDepends = [this.mainDepend].concat(this.subDepends);
     allDepends.forEach(item => {
       allFiles.push(...Array.from(item.files));
     });
     allFiles = Array.from(new Set(allFiles));
-    // 过滤pages页面
-    if (this.config.needDeletePages) {
-      allFiles = this.isDelPages(allFiles)
-    }
     await this._copyFile(allFiles);
     return allFiles;
   }
@@ -258,7 +254,7 @@ class DependContainer {
       const filePath = path.join(dirname, item);
       const data = fse.statSync(filePath);
       if (data.isFile()) {
-        if (this.config.staticFileExtends.includes(path.extname(filePath))) {
+        if (this.config.staticFileExtends.includes(path.extname(filePath)) && this.isDelStaticFiles(filePath)) {
           result.push(filePath);
         }
       } else if (dirname.indexOf('node_modules') === -1 && !this.config.excludeFiles.includes(dirname)) {
@@ -280,29 +276,29 @@ class DependContainer {
         const target = file.replace(this.config.sourceDir, this.config.targetDir);
         fse.copy(source, target).then(() => {
           // new 新增app.json特殊处理
-          if ((this.config.needDeleteSubPackages || this.config.needDeletePages) && source == path.join(this.config.sourceDir, 'app.json')) {
+          if ((this.config.needSubPackages || this.config.needPages) && source == path.join(this.config.sourceDir, 'app.json')) {
             // 重写app.json subPackages pages tabBar
             const targetContent = fse.readJsonSync(source);
-            if (this.config.needDeleteSubPackages) {
+            if (this.config.needSubPackages) {
               const subPkgs = targetContent.subPackages;
               let newSubPkgs = subPkgs.filter(item => {
-                if (!this.config.needDeleteSubPackages.includes(item.root)) {
+                if (this.config.needSubPackages.includes(item.root)) {
                   return item
                 }
               })
               targetContent.subPackages = newSubPkgs;
             }
 
-            if (this.config.needDeletePages) {
+            if (this.config.needPages) {
               const pages = targetContent.pages, tabBar = targetContent.tabBar;
               let newList = tabBar.list.filter(item => {
-                if (!this.config.needDeletePages.includes(item.pagePath)) {
+                if (this.config.needPages.includes(item.pagePath)) {
                   return item
                 }
               })
               tabBar.list = newList;
               let newPages = pages.filter(item => {
-                if (!this.config.needDeletePages.includes(item)) {
+                if (this.config.needPages.includes(item)) {
                   return item
                 }
               })
@@ -324,26 +320,57 @@ class DependContainer {
   }
 
   /**
-   * 过滤pages文件
+   * 是否保留静态文件
+   * @returns 
+   */
+  isDelStaticFiles(filePath) {
+    let isAdd = false;
+    // 判断是否是分包中的文件
+    if (filePath.includes(path.join(this.config.sourceDir, 'subPackages'))) {
+      if (path.sep !== '/') {
+        filePath = filePath.replace(/\\/g, '/');
+      }
+      this.config.needSubPackages.filter(item => {
+        if (filePath.includes(item)) {
+          isAdd = true
+        }
+      })
+    } else {
+      isAdd = true
+    }
+    return isAdd
+  }
+
+  /**
+   * 过滤page/subpackages文件
    * @param {*} files 
    * @returns 
    */
-  isDelPages(files) {
+  isDelPagesOrSubPackages(files) {
+    let basePath = path.join(__dirname, '../../../miniprogram/').replace(/\\/g, '/');
+
     files = files.filter(item => {
       if (path.sep !== '/') {
         item = item.replace(/\\/g, '/');
       }
-      let isAdd= true;
-      this.config.needDeletePages.filter(element => {
-        if(item.indexOf(element) >= 0) {
-          isAdd = false;
-          console.log('这个没有加载: ', item);
-        }
-      });
+      let isAdd = true;
+      // this.config.needPages.filter(element => {
+      //   if (item.indexOf(basePath+'pages') >= 0 && item.indexOf(basePath+element) < 0) {
+      //     isAdd = false;
+      //     console.log('这个路径要删除', item);
+      //   }
+      // });
 
-      if(isAdd) return item;
+      // this.config.needSubPackages.filter(element => {
+      //   if (item.indexOf(basePath+'subPackages') >= 0) {
+      //     console.log('这个路径要删除', item);
+      //     exit();
+      //     isAdd = false;
+      //   }
+      // });
+
+      if (isAdd) return item;
     })
-
     return files
   }
 }

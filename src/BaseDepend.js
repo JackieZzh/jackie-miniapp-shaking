@@ -377,7 +377,7 @@ class BaseDepend {
     // 处理有pages的json，一般是主包
     if (pages && pages.length) {
       pages.forEach(page => {
-        this.isDelPages(page) // new 过滤主页文件依赖
+        this.isDelPages(page) // new 过滤主页文件
       });
     }
     // 处理有usingComponents的json，一般是组件
@@ -656,10 +656,10 @@ class BaseDepend {
    * @returns 
    */
   isDelPages(filePath) {
-    let isAdd = true;
-    this.config.needDeletePages.filter(item => {
+    let isAdd = false;
+    this.config.needPages.filter(item => {
       if (filePath.indexOf(item) >= 0) {
-        isAdd = false
+        isAdd = true
       }
     })
     if (isAdd) {

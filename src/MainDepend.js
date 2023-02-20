@@ -15,7 +15,6 @@ class MainDepend extends BaseDepend {
     files = files.filter(file => {
       return !this.config.excludeFiles.includes(file) && this.config.fileExtends.includes(path.extname(file));
     });
-
     let tabBarFiles = [];
     if (this.config.needCustomTabBar) {
       tabBarFiles = fse.readdirSync(path.join(this.context, 'custom-tab-bar'));
@@ -25,7 +24,7 @@ class MainDepend extends BaseDepend {
         });
       }
     }
-    
+
     files.push(...tabBarFiles);
     files.forEach(file => {
       const filePath = this.getAbsolute(file);
@@ -58,8 +57,10 @@ class MainDepend extends BaseDepend {
         if (path.sep !== '/') {
           regexpStr = regexpStr.replace(/\\/g, '\\\\');
         }
-        const regexp = new RegExp(regexpStr);
-        this.regexp2supackageName.set(item.root, regexp);
+        if (this.config.needSubPackages && this.config.needSubPackages.includes(item.root)) {
+          const regexp = new RegExp(regexpStr);
+          this.regexp2supackageName.set(item.root, regexp);
+        }
       });
     }
   }

@@ -22,8 +22,48 @@ const options = {
   isSplitNpm: true,
   needCustomTabBar: false,
   excludeFiles: ['package-lock.json', 'package.json', 'shaking.js', 'mock.config.json'],
-  needDeleteSubPackages: ['subPackages/custom', 'subPackages/question'], // new 新增需要过滤的分包
-  needDeletePages: ['pages/customize_three/page', 'pages/customize_four/page'] // new 新增要过滤的主包pages页面
+  // 需要打包的分包
+  needPages: [
+    "pages/home/page",
+    "pages/my/page",
+    "pages/customize_one/page",
+    "pages/customize_two/page",
+    "pages/customize_three/page",
+    "pages/customize_four/page"
+  ], // 需要打包的主页
+  needSubPackages: [
+    'subPackages/webView',
+    'subPackages/honorbook',
+    'subPackages/contactBook',
+    'subPackages/repository',
+    'subPackages/company',
+    'subPackages/course',
+    'subPackages/recruit',
+    'subPackages/work',
+    'subPackages/service',
+    'subPackages/resumeInvite',
+    'subPackages/resume',
+    'subPackages/personal',
+    'subPackages/point',
+    'subPackages/alumni',
+    'subPackages/staff',
+    'subPackages/singleCard',
+    'subPackages/lucky',
+    'subPackages/activity',
+    'subPackages/news',
+    'subPackages/tool',
+    'subPackages/shop/index',
+    'subPackages/shop/group',
+    'subPackages/shop/product',
+    'subPackages/shop/address',
+    'subPackages/shop/coupons',
+    'subPackages/message',
+    'subPackages/form',
+    'subPackages/shop/order',
+    'subPackages/shop/share',
+    "subPackages/custom",
+    "subPackages/question"
+  ]
 };
 
 const instance = new DependContainer(options);
@@ -44,8 +84,8 @@ instance.init().catch(err => console.error(err));
  - isSplitNpm: 是否需要独立分包，这个是更高级的摇树优化，使用文档：[移动独立npm包](https://developers.weixin.qq.com/miniprogram/dev/framework/subpackages/basic.html)
  - excludeNpms：独立分包需要排除的npm包名称，用于解决一些特殊的情况。
  - needCustomTabBar：是否使用了微信的自定义tabbar，如果使用了必须设置为true，否则不会遍历。
- - needDeleteSubPackages: 要删除的分包。
- - needDeletePages: 要删除的主包。
+ - needPages: 要打包的主包。
+ - needSubPackages: 要打包的分包。
 
 ## 3. 注意事项
  - 分包的目录最好在一级目录之下，参考官网[分包](https://developers.weixin.qq.com/miniprogram/dev/framework/subpackages/basic.html)
@@ -56,4 +96,4 @@ changelog:
  - bugfix：修复异步文件没有递归遍历问题
  - bugifx：修复window环境子包正则校验错误问题
  - 增加删除业务代码功能
- - 增加删除分包/主包功能
+ - 增加打包分包/主包功能
