@@ -31,7 +31,8 @@ class DependContainer {
     if (this.config.analyseDir) {
       this.createTree();
     }
-    console.log('success!');
+    
+    return {status: 0, message: '打包成功'}
   }
 
   clear() {
@@ -344,39 +345,6 @@ class DependContainer {
       isAdd = true
     }
     return isAdd
-  }
-
-  /**
-   * 过滤page/subpackages文件
-   * @param {*} files 
-   * @returns 
-   */
-  isDelPagesOrSubPackages(files) {
-    let basePath = path.join(__dirname, '../../../miniprogram/').replace(/\\/g, '/');
-
-    files = files.filter(item => {
-      if (path.sep !== '/') {
-        item = item.replace(/\\/g, '/');
-      }
-      let isAdd = true;
-      // this.config.needPages.filter(element => {
-      //   if (item.indexOf(basePath+'pages') >= 0 && item.indexOf(basePath+element) < 0) {
-      //     isAdd = false;
-      //     console.log('这个路径要删除', item);
-      //   }
-      // });
-
-      // this.config.needSubPackages.filter(element => {
-      //   if (item.indexOf(basePath+'subPackages') >= 0) {
-      //     console.log('这个路径要删除', item);
-      //     exit();
-      //     isAdd = false;
-      //   }
-      // });
-
-      if (isAdd) return item;
-    })
-    return files
   }
 }
 
