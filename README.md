@@ -22,7 +22,7 @@ const options = {
   isSplitNpm: true,
   needCustomTabBar: false,
   excludeFiles: ['package-lock.json', 'package.json', 'shaking.js', 'mock.config.json'],
-  // 需要打包的分包
+  // 需要打包的主页
   needPages: [
     "pages/home/page",
     "pages/my/page",
@@ -30,7 +30,8 @@ const options = {
     "pages/customize_two/page",
     "pages/customize_three/page",
     "pages/customize_four/page"
-  ], // 需要打包的主页
+  ], 
+  // 需要打包的分包
   needSubPackages: [
     'subPackages/webView',
     'subPackages/honorbook',
@@ -63,7 +64,9 @@ const options = {
     'subPackages/shop/share',
     "subPackages/custom",
     "subPackages/question"
-  ]
+  ],
+  // 第三方appid
+  extAppid: ''
 };
 
 const instance = new DependContainer(options);
@@ -97,3 +100,4 @@ changelog:
  - bugifx：修复window环境子包正则校验错误问题
  - 增加删除业务代码功能
  - 增加打包分包/主包功能
+ - 增加第三方appCli上传所需appid

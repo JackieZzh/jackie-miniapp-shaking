@@ -57,6 +57,9 @@ class ConfigService {
 
     // new jackie新增主包pages加载机制
     this.needPages = options.needPages || false;
+
+    // new jackie新增第三方appId 用于cli上传代码
+    this.extAppid = options.extAppid || false;
   }
 }
 

@@ -307,6 +307,11 @@ class DependContainer {
             }
 
             fse.writeFileSync(target, JSON.stringify(targetContent))
+          } else if(this.config.extAppid && source == path.join(this.config.sourceDir, 'ext.json')){
+            // 重写ext.json extAppid
+            const targetContent = fse.readJsonSync(source);
+            targetContent.extAppid = this.config.extAppid;
+            fse.writeFileSync(target, JSON.stringify(targetContent))
           }
           count++;
           if (count === files.length) {
