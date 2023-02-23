@@ -31,8 +31,7 @@ class DependContainer {
     if (this.config.analyseDir) {
       this.createTree();
     }
-    
-    return {status: 0, message: '打包成功'}
+    console.log('打包成功');
   }
 
   clear() {
